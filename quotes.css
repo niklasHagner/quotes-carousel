@@ -1,0 +1,85 @@
+body {
+  background: #222;
+  color: white;
+  font-family: Helvetica, Georgia;
+  font-size: 18px;
+  line-height: 1;
+  overflow: hidden;
+  margin: 0px 30px;
+}
+
+.cust-quotes {
+  width: 100%;
+  height: auto;
+  display: block;
+  position: relative;
+}
+
+.cust-quotes blockquote {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  font-size: 5vh; /*20px;*/
+  text-align: center;
+  opacity: 0;
+  z-index: 0;
+  transition: all .9s ease-out 0s, transform .9s ease-in 0s;
+
+  /*margin: 0 50px;*/
+}
+
+/* IE < 10 fallback */
+.no-csstransforms .cust-quotes blockquote,
+.no-csstransitions .cust-quotes blockquote {
+  position: relative;
+}
+
+.cust-quotes blockquote:first-child {
+  opacity: 0;
+  transform: translateY(-10px) scale(1.1);
+}
+
+.cust-quotes blockquote:first-child { /*only the 2nd child is visible*/
+  opacity: 1;
+  z-index: 1;
+  transition: opacity 1.6s ease 0s;
+}
+
+.cust-quotes blockquote p {
+  font-weight: normal;
+  color: #eee;
+  line-height: 30px;
+  /*margin-bottom: 10px;*/
+  font-size: 100px;
+  line-height: 1;
+  transition: all 2s;
+  margin: 10px 0 5px 0;
+}
+
+.cust-quotes blockquote p:before {
+  content: '\201C';
+}
+
+.cust-quotes blockquote p:after {
+  content: '\201D';
+}
+
+.cust-quotes blockquote cite {
+  text-align: center;
+  font-size: 16px;
+  color: #ccc;
+  font-style: normal;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+
+.cust-quotes blockquote cite a {
+  font-size: 14px;
+  font-weight: normal;
+}
+.container {
+  margin: 0 auto;
+}
+#testimonials {
+  margin: 0 auto;
+}
