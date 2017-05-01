@@ -5,8 +5,18 @@ body {
   font-size: 18px;
   line-height: 1;
   overflow: hidden;
+}
+main {
   margin: 0px 30px;
 }
+header {
+    position: absolute;
+    text-align: right;
+    padding-right: 10px;
+    width: 96%;
+}
+.btn-pause { color: white; }
+.btn-pause.active { color: yellow; }
 
 .cust-quotes {
   width: 100%;
@@ -20,13 +30,10 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  font-size: 5vh; /*20px;*/
-  text-align: center;
+  font-size: 5vh;
+  text-align: left;
   opacity: 0;
   z-index: 0;
-  transition: all .9s ease-out 0s, transform .9s ease-in 0s;
-
-  /*margin: 0 50px;*/
 }
 
 /* IE < 10 fallback */
@@ -37,7 +44,7 @@ body {
 
 .cust-quotes blockquote:first-child {
   opacity: 0;
-  transform: translateY(-10px) scale(1.1);
+  /*transform: translateY(-10px) scale(1.1);*/
 }
 
 .cust-quotes blockquote:first-child { /*only the 2nd child is visible*/
@@ -53,7 +60,7 @@ body {
   /*margin-bottom: 10px;*/
   font-size: 100px;
   line-height: 1;
-  transition: all 2s;
+  /*transition: all 2s;*/
   margin: 10px 0 5px 0;
 }
 
