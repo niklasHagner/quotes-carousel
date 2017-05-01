@@ -1,6 +1,14 @@
 
+var $quotesWrapper = null;
+var quotes = [];
+const MARGIN = 230;
+
 $(function () {
     window.paused = false;
+    window.randomize = true;
+    window.selectedQuoteIndexes = [];
+    $quotesWrapper = $(".cust-quotes");
+    quotes = $quotesWrapper.find("blockquote");
     initQuoteCarousel();
 });
 
@@ -36,7 +44,6 @@ var colors = [
 
 function randomizeColor() {
     var random_color = colors[Math.floor(Math.random() * colors.length)];
-    $(".cust-quotes blockquote p").css("color", random_color);
     return random_color;
 };
 
@@ -49,76 +56,62 @@ function pause() {
     return window.paused;
 };
 
-var $quotesWrapper = null;
+function randomize() {
+    window.randomize = !window.randomize;
+    $(".btn-randomize").toggleClass("active");
+    return window.randomize;
+};
+
 function initQuoteCarousel() {
-    $quotesWrapper = $(".cust-quotes");
+
     var $quotes = $quotesWrapper.find("blockquote");
     if (!$quotes.length)
         throw new Error("No quote text!");
-
-    //Prepare for resizing fonts
-    window.paddingHeight = 320
-    window.winWidth = $(window).width()
-    window.winHeight = $(window).height() - window.paddingHeight
-    console.log("window", window.winWidth + "x" + window.winHeight);
 
     selectNextQuote();
 };
 
 var selectNextQuote = function () {
-    $quotesWrapper.find("blockquote:first").detach().appendTo($quotesWrapper);
-    let $quote = $quotesWrapper.find("blockquote:first")
-    //fixText($quote);
-    fitFontToCoverHeight($quote.find("p:first"), window.innerHeight);
-    $quote.css("color", randomizeColor());
 
-    //next
-    if (!window.paused)
-        setTimeout(selectNextQuote, $quote.data("timeout"));
+    let selectedQuote = null;
+    if (window.paused === false) {
+        $("blockquote:first").remove();
+        selectedQuote = window.randomize ? quotes[getRandomQuoteIndex(quotes)] : quotes[0];
+        $(selectedQuote).insertBefore("blockquote:first");
+        var desiredHeight = window.innerHeight - MARGIN;
+        fitFontToCoverHeight($(selectedQuote).find("p:first"), desiredHeight);
+        $(selectedQuote).find("p").css("color", randomizeColor());
+        setTimeout(selectNextQuote, $(selectedQuote).data("timeout"));
+    }
 };
 
-function fixText($quote) {
-
-    let text = $quote.find("p:first"),
-        color = randomizeColor();
-    w = text.width() * 2,
-        h = text.height(),
-        txt = text.html(),
-        charCount = txt.length,
-        size = w / charCount,
-        heightPerRow = 100,
-        maxVH = 20,
-        minVH = 5,
-        rowVH = 5,
-        rowCount = h / heightPerRow,
-        diffVHBasedOnChars = maxVH - (charCount / 5),
-        /*magic fontisze calculation */
-        diffVH = maxVH - (rowCount * 1.4),
-        fontVH = Math.max(minVH, Math.max(minVH, diffVH)),
-        logColor = 'background: black; color:' + color,
-        logMessage = '%c rowCount:' + rowCount + ', WxH:' + w + 'x' + h + ', fontVH ' + fontVH + ', charCount:' + charCount + ' color: ' + color;
-    text.css('font-size', fontVH + 'vh');
-    console.log(logMessage, logColor);
+function getRandomQuoteIndex(quotes) {
+    var max = quotes.length - 1,
+        min = 0;
+    var randomIndex = Math.floor(Math.random() * (max - min)) + min;
+    window.selectedQuoteIndexes.push(randomIndex);
+    return randomIndex;
 }
 
 function fitFontToCoverHeight($text, desiredHeight) {
     var attempts = 0;
-    while (attempts < 10) {
-        var textHeight = $text.height();
-        var fontSize = parseInt($text.css("fontSize") || 20);
-        const diff = desiredHeight - textHeight;
-        if (diff > 0 && diff <= 300) { //close enough
-            return;
-        }
-        else if (diff > 0) { //bigger font
-            fontSize *= Math.round(diff/100) ;
-        }
-        else if (diff < 0) { //smaller font
-            fontSize *= 0.75;
-        }
-        $text.css("fontSize", fontSize + "px");
-        attempts += 1;
+    adaptFont($text, desiredHeight, attempts);
+}
+
+const MAX_ATTEMPTS = 10;
+function adaptFont($text, desiredHeight, attempts) {
+    attempts += 1;
+    var textHeight = $text.height();
+    var fontSize = parseInt($text.css("fontSize") || 20);
+    const diff = textHeight - desiredHeight;
+    const absoluteDiff = Math.abs(diff);
+    if (absoluteDiff <= 50) { //fontsize is good enough
+        return;
     }
-
-
+    let fsChange = absoluteDiff * 0.05;
+    fontSize = (diff < 0) ? fontSize + fsChange : fontSize - fsChange;
+    $text.css("fontSize", fontSize + "px");
+    if (attempts < MAX_ATTEMPTS) {
+        setTimeout(() => adaptFont($text, desiredHeight, attempts), 20);
+    }
 }
